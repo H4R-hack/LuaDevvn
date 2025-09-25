@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Get Key - HTML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .menu {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      text-align: center;
+      width: 350px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+    .btn:hover { background: #2980b9; }
+    pre {
+      background: #ecf0f1;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 14px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <h2>🔑 Get Key</h2>
+    <button class="btn" onclick="generateKey()">Tạo Key Mới</button>
+    <button class="btn" onclick="revealKey()">Hiện Key</button>
+    <pre id="keyBox">Chưa có key nào</pre>
+  </div>
+
+  <script>
+    // 🔗 Linkvertise URL (đổi thành link QC của bạn)
+    const LINKVERTISE_URL = "https://linkvertise.com/YOUR_LINK_HERE";
+
+    let keys = JSON.parse(localStorage.getItem("keys") || "[]");
+
+    function saveKeys(){ localStorage.setItem("keys", JSON.stringify(keys)); }
+
+    function cleanup(){
+      const now = Date.now();
+      keys = keys.filter(k => now < k.expire);
+      saveKeys();
+    }
+
+    function generateKey(){
+      cleanup();
+      // mở quảng cáo
+      window.open(LINKVERTISE_URL, "_blank");
+
+      // tạo key mới
+      const rand = Math.random().toString(36).substring(2,18).toUpperCase();
+      const expire = Date.now() + 15*24*60*60*1000; // 15 ngày
+      keys = [{key: rand, expire}]; // luôn giữ 1 key mới
+      saveKeys();
+      revealKey();
+    }
+
+    function revealKey(){
+      cleanup();
+      if(keys.length === 0){
+        document.getElementById("keyBox").innerText = "Chưa có key nào hoặc đã hết hạn.";
+        return;
+      }
+      const k = keys[0];
+      const exp = new Date(k.expire).toLocaleString();
+      document.getElementById("keyBox").innerText = `Key: ${k.key}\nHết hạn: ${exp}`;
+    }
+  </script>
+</body>
+</html>
+
